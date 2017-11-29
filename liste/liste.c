@@ -4,6 +4,8 @@
 
 #include "liste.h"
 
+// freeNode nascosta dall'interfaccia
+
 struct node {
     void *val;
     struct node *next;
@@ -89,6 +91,7 @@ int addTail(Lista *l, void *val, char *mode) {
     link oldLastItem;
     if (l->head==NULL && l->tail==NULL) { // se la lista è vuota
         l->head=l->tail=newNode(val, l->elementSize, NULL, NULL, mode);
+        l->n++;
         return 1;
     } else {
         // prendo la tail attuale e me la salvo poi collego la tail a un new
@@ -96,7 +99,45 @@ int addTail(Lista *l, void *val, char *mode) {
         // il penultimo nodo
         oldLastItem=l->tail;
         l->tail=newNode(val, l->elementSize, oldLastItem, NULL, mode);
+        // aggiorno il next del precedente
+        oldLastItem->next=l->tail;
         l->n++;
         return 0;
     }
+}
+
+int freeNode(link p) {
+    free(p->val);
+    free(p);
+    return 0;
+}
+
+int delNode(Lista *l, link x) {
+
+    if (l->head == l->tail) {
+        // cancellazione di un elemento nella lista
+        freeNode(x);
+        l->head = l->tail = NULL;
+    } else if (x==l->head) {
+        // cancellazione in testa con più di un elemento
+        // imposto il valore prev del secondo elemento a NULL
+        x->next->prev = NULL;
+        // la testa diventa il secondo elemento
+        l->head=x->next;
+        freeNode(x);
+    } else if (x==l->tail) {
+        // cancellazione in coda
+        // il valore next del precedente di x diventa NULL
+        x->prev->next=NULL;
+        l->tail=x->prev;
+        freeNode(x);
+    } else {
+        // cancellazione di un elemento in mezzo alla lista
+        // il successivo del precedente diventa il successivo di x
+        x->prev->next=x->next;
+        // il precedente del successivo diventa il precedente di z
+        x->next->prev=x->prev;
+        freeNode(x);
+    }
+    return l->n--;
 }
