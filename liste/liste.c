@@ -4,8 +4,6 @@
 
 #include "liste.h"
 
-// freeNode nascosta dall'interfaccia
-
 struct node {
     void *val;
     struct node *next;
@@ -18,6 +16,10 @@ struct _Lista {
     link head;
     link tail;
 };
+
+int getN(Lista *l) {
+    return l->n;
+}
 
 link getHead(Lista *l) {
     return l->head;
@@ -33,6 +35,10 @@ link getPrev(link x) {
 
 link getVal(link x) {
     return x->val;
+}
+
+int isEmpty(Lista *l) {
+    return (getHead(l)==NULL)?1:0;
 }
 
 Lista *initList(size_t elSize) {
@@ -106,7 +112,7 @@ int addTail(Lista *l, void *val, char *mode) {
     }
 }
 
-int freeNode(link p) {
+static int freeNode(link p) {
     free(p->val);
     free(p);
     return 0;
